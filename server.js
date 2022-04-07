@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const inquirer = require('inquirer');
+require('dotenv').config()
 
 // Import and require mysql2
 const mysql = require('mysql2');
@@ -31,56 +33,205 @@ const db = mysql.createConnection(
     user: 'root',
     // MySQL password
     password: 'Password123!',
-    database: 'movies_db'
+    database: 'Company_db'
   },
-  console.log(`Connected to the movies_db database.`)
+  console.log(`Connected to the Company_db database.`)
 );
 
-// Query database
-db.query('SELECT * FROM movie', function (err, results) {
-  console.log(results);
-  console.log(err)
-});
-
-/* USING APIs WITH ROUTE LISTENERS */
-app.get('/api', (req, res) => {
-    res.json(movie_db);
-})
-
-
-// // GET route that returns any specific term
-// app.get("/api/movies/:term", (req, res) => {
-// 	console.log(req.params); 
-// 	const requestedTerm = req.params.term.toLowerCase();
-
-// 	// Iterate through the terms name to check if it matches `req.params.term`
-// 	for (let i = 0; i < termData.length; i++) {
-// 		// example
-// 		const foundTerm = termData.filter(
-// 			(termObj) => termObj.term.toLowerCase() === requestedTerm
-// 		)[0];
-
-// 		console.log(foundTerm);
-
-// 		if (requestedTerm === termData[i].term.toLowerCase()) {
-// 			return res.json(termData[i]);
-// 		}
-// 	}
-// })
-
-app.get("/", (req, res) => {
-    db.query ('movies_db', (err, results) => {
-      res.status(200).json(results)
-    });
+const start = () => {
+  inquirer.prompt({
+    name: "action",
+    type: "list",
+    message: "What would you like to do?",
+    choices: [
+      "View all department.",
+      "View all roles.",
+      "View all employees.",
+      "Add a department.",
+      "Add a role.",
+      "Add an employee.",
+      "Update an employee role",
+      "Exit.",
+    ],
+  })
+  .then = ((answer) => {
+    switch (answer.action) {
+      case 'View all department.':
+        //viewAllDepartment() function
+        viewAllDepartment()
+        break;
+      case 'View all roles.':
+        //viewAllRoles() function
+        viewAllRoles()
+        break;
+      case 'View all employees.':
+        //viewAllEmployees() function
+        viewAllEmployees()
+        break;
+      case 'Add a department':
+        //addADepartment() function
+        addADepartment()
+        break;
+      case 'Add a role.':
+        //addARole() function
+        addARole()
+        break;
+      case 'Add an employee.':
+        //addAnEmployee() function
+        addAnEmployee()
+        break;
+      case 'Update an employee role':
+        //addDepartment() function
+        break;
+      case 'Exit.':
+        db.end()
+        //addDepartment() function
+        break;
+    }
   })
 
-// // Default response for any other request (Not Found)
-// app.use((req, res) => {
-//   res.status(404).end();
-// });
+  // functions
+    const viewAllDepartment = () => {
+    // Render department table
+    db.query("SELECT * FROM departments", (req, res) => {
+      if (req) throw req;
+      console.table(res);
+      start();
+    });
+  }
 
-// app.get("*", (req, res) => res.send("File Not Found"));
+    const viewAllRoles = () => {
+    // Render employee table
+    db.query("SELECT * FROM role", (err, results) => {
+      if (err) throw err;
+      console.table(results);
+      start();
+    });
+  }
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    const viewAllEmployees = () => {
+    db.query(
+      `SELECT 
+      `,
+      (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        start();
+      }
+    );
+  }
+
+    const addADepartment = () => {
+    inquirer
+      .prompt({
+        name: "department",
+        type: "input",
+        message: "Please enter the name of the department you would like to add?",
+      })
+      .then(function (answer) {
+        db.query(
+          "INSERT INTO departments SET ?",
+          {
+            name: answer.department,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log(
+              answer.department + " department has been successfully added"
+            );
+            // Return to the beginning
+            start();
+          }
+        );
+      });
+  }
+
+    function addARole() {
+    inquirer
+      .prompt([
+        {
+          name: "role",
+          type: "input",
+          message: "Please enter the title of the role you like to add?",
+        },
+        {
+          name: "salary",
+          type: "input",
+          message: "Please enter the salary of the role.",
+          validate: validateNumber,
+        },
+      ])
+      .then(function (answers) {
+        db.query(
+          "INSERT INTO role SET ?",
+          {
+            title: answers.role,
+            salary: answers.salary,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log(answers.role + " has been successfully added to roles.");
+            // Return to the beginning
+            start();
+          }
+        );
+      });
+  }
+
+    const addAnEmployee = () => {
+    db.query("SELECT * FROM role", (err, results) => {
+      if (err) throw err;
+      inquirer
+        .prompt([
+          {
+            name: "first_name",
+            type: "input",
+            message: "Please enter employees fist name?",
+          },
+          {
+            name: "last_name",
+            type: "input",
+            message: "Please enter employees last name?",
+          },
+          {
+            name: "employee_role",
+            type: "list",
+            message: "Please enter employee's role?",
+            choices: () => results.map((result) => result.title),
+          },
+          {
+            name: "manager_id",
+            type: "input",
+            message: "Please enter manager id?",
+          },
+        ])
+        .then((answers) => {
+          answers.role = results.filter(
+            (result) => result.title === answers.role
+          )[0].id;
+          db.query(
+            "INSERT INTO employee SET ?",
+            {
+              first_name: answers.first_name,
+              last_name: answers.last_name,
+              role_id: answers.employee_role,
+              manager_id: answers.manager_id,
+            },
+            (err) => {
+              if (err) throw err;
+              console.log(
+                answers.firstName +
+                  " " +
+                  answers.lastName +
+                  " successfully added to employee with the role of " +
+                  answers.role
+              );
+              // Return to the beginning
+              start();
+            }
+          );
+        });
+    });
+  }
+}
+
