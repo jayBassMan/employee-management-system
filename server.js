@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const inquirer = require('inquirer');
+const sequelize = require("./config/connection");
 require('dotenv').config()
 
 // Import and require mysql2
@@ -10,6 +11,11 @@ const api = require("./routes/index")
 
 const PORT = process.env.PORT || 3001;
 const app = express();
+
+// turn on connection to db and server
+sequelize.sync({ force: false }).then(() => {
+  app.listen(PORT, () => console.log('Now listening'));
+});
 
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
