@@ -12,7 +12,18 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.3",
+    "inquirer": "^8.2.2",
     "mysql2": "^2.3.3",
-    "path": "^0.12.7"
-  }
+    "path": "^0.12.7",
+    "sequelize": "^6.18.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jayBassMan/employee-management-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jayBassMan/employee-management-system/issues"
+  },
+  "homepage": "https://github.com/jayBassMan/employee-management-system#readme"
 }
