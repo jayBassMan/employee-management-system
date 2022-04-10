@@ -32,20 +32,25 @@ app.get("/index", (req, res) => {
 	res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-
+require('dotenv').config()
 
 // Connect to database
 const db = mysql.createConnection(
   {
     host: 'localhost',
     // MySQL username,
-    user: 'root',
+    user:  process.env.DB_USER,
     // MySQL password
-    password: 'Password123!',
-    database: 'Company_db'
+    password: process.env.DB_PASSWORD,
+    database:  process.env.DB_NAME
   },
   console.log(`Connected to the Company_db database.`)
 );
+
+db.connect(function (err, db) {
+  start();
+})
+
 
 const start = () => {
   inquirer.prompt({
@@ -63,35 +68,37 @@ const start = () => {
       "Exit.",
     ],
   })
-  .then = ((answer) => {
+  .then((answer) => {
+    console.log("answer:",answer)
     switch (answer.action) {
       case 'View all department.':
         //viewAllDepartment() function
-        view.viewAllDepartment()
+        view.viewAllDepartment(db, start);
         break;
       case 'View all roles.':
         //viewAllRoles() function
-        view.viewAllRoles()
+        view.viewAllRoles(db, start);
         break;
       case 'View all employees.':
         //viewAllEmployees() function
-        view.viewAllEmployees()
+        view.viewAllEmployees(db, start);
         break;
-      case 'Add a department':
+      case 'Add a department.':
         //addADepartment() function
-        add.addADepartment()
+        add.addADepartment(db, start);
         break;
       case 'Add a role.':
         //addARole() function
-        add.addARole()
+        add.addARole(db, start);
         break;
       case 'Add an employee.':
-        //addAnEmployee() function
-        add.addAnEmployee()
+        //addAnEmplconsole.oyee() function
+        console.log(add)
+        add.addAnEmployee(db, start)
         break;
-      case 'Update an employee role':
+      case 'Update an employee role.':
         //update() function
-        update.update()
+        update.update(db, start);
         break;
       case 'Exit.':
         //end()
@@ -101,6 +108,4 @@ const start = () => {
   })
 }
 
-
-exports.start = start;
-start()
+ 
