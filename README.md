@@ -37,5 +37,3 @@ License under the MIT[https://choosealicense.com/](https://choosealicense.com/).
 
 Phil Loy
 ## Questions
-
-Any questions regarding this project, contact denzgrant@gmail.com directly.

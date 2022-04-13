@@ -2,46 +2,31 @@ var inquirer = require("inquirer");
 const connection = require("../config/connection");
 const first = require("../server");
 
-
 const addADepartment = (db, start) => {
-  db.query("SELECT department as name, id as value FROM role", (err, results) => {
-    if (err) throw err;
-
-    db.query(
-      // '"SELECT department as name, id as value FROM role"',
-      (err, data) => {
-        
-        inquirer
-          .prompt([
-            {
-              name: "department",
-              type: "input",
-              message:
-                "Please enter the name of the department you would like to add?",
-                choices: data
-            },
-          ])
-          .then((answers) => {
-            db.query(
-              "INSERT INTO department SET ?",
-              {
-                department: answers.department,
-              },
-              (err) => {
-                if (err) throw err;
-                console.log(
-                  answers.department + " successfully added department "
-                );
-                // Return to the beginning
-                start();
-              }
-            );
-          });
-      }
-    );
-  });
+  inquirer
+    .prompt([
+      {
+        name: "department",
+        type: "input",
+        message:
+          "Please enter the name of the department you would like to add?",
+      },
+    ])
+    .then((answers) => {
+      db.query(
+        "INSERT INTO department SET ?",
+        {
+          department: answers.department,
+        },
+        (err) => {
+          if (err) throw err;
+          console.log(answers.department + " successfully added department ");
+          // Return to the beginning
+          start();
+        }
+      );
+    });
 };
-
 // const addADepartment = (db, start) => {
 //   inquirer
 //     .prompt({
@@ -67,11 +52,15 @@ const addADepartment = (db, start) => {
 //     });
 // };
 const addARole = (db, start) => {
+  // because a role belongs to a department, we need to know all the departments available to add this role to.
+  //first we need to get all the departments as a list to use in inquirer as a list for choices to be selected
+  // then we ask the role questions -- title, salary, and which department
+  //then we know title salary and department id and can insert those values into the role table
   db.query("SELECT title as name, id as value FROM role", (err, results) => {
     if (err) throw err;
 
     db.query(
-      'SELECT concat(title) as name, id as value from employee',
+      "SELECT concat(title) as name, id as value from employee",
       (err, employeeData) => {
         inquirer
           .prompt([
@@ -89,7 +78,7 @@ const addARole = (db, start) => {
               name: "department_id",
               type: "input",
               message: "Please enter the department_id.",
-            }
+            },
           ])
           .then((answers) => {
             db.query(
@@ -102,9 +91,7 @@ const addARole = (db, start) => {
               (err) => {
                 if (err) throw err;
                 console.log(
-                  answers.title +
-                    " successfully added Role. " +
-                    answers.role
+                  answers.title + " successfully added Role. " + answers.role
                 );
                 // Return to the beginning
                 start();
@@ -177,11 +164,10 @@ const addAnEmployee = (db, start) => {
               name: "manager_id",
               type: "list",
               message: "Please enter manager id?",
-              choices: employeeData
+              choices: employeeData,
             },
           ])
           .then((answers) => {
-           
             db.query(
               "INSERT INTO employee SET ?",
               {
