@@ -8,27 +8,29 @@ const addADepartment = (db, start) => {
     if (err) throw err;
 
     db.query(
-      'SELECT concat(first_name," " ,last_name) as name, id as value from employee',
-      (err, employeeData) => {
+      // '"SELECT department as name, id as value FROM role"',
+      (err, data) => {
+        
         inquirer
           .prompt([
             {
               name: "department",
               type: "input",
-              message: "Please enter the name of the department you would like to add?",
-            }
+              message:
+                "Please enter the name of the department you would like to add?",
+                choices: data
+            },
           ])
           .then((answers) => {
             db.query(
-              "INSERT INTO employee SET ?",
+              "INSERT INTO department SET ?",
               {
                 department: answers.department,
               },
               (err) => {
                 if (err) throw err;
                 console.log(
-                    answers.department +
-                    " successfully added department "
+                  answers.department + " successfully added department "
                 );
                 // Return to the beginning
                 start();

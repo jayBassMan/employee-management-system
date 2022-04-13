@@ -92,7 +92,7 @@ const start = () => {
         add.addARole(db, start);
         break;
       case 'Add an employee.':
-        //addAnEmplconsole.oyee() function
+        //addAnEmployee() function
         console.log(add)
         add.addAnEmployee(db, start)
         break;
