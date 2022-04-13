@@ -4,8 +4,8 @@ const first = require("../server");
 
 
 const update = (db, start) => {
-  connection.query(
-    "SELECT * FROM role; SELECT * FROM departments",
+  db.query(
+    "SELECT title as name, id as value FROM role",
     (err, results) => {
       if (err) throw err;
       inquirer
@@ -27,12 +27,12 @@ const update = (db, start) => {
           let roleID = results[0].filter(
             (result) => result.title === answers.role
           )[0].id;
-          let newDepartment = results[1].filter(
+          let department = results[1].filter(
             (result) => result.name === answers.department
           )[0].id;
-          connection.query(`UPDATE role set department_id = ? WHERE id = ?`, [
-            newDepartment,
-            roleID,
+          db.query(`UPDATE role set department_id = ? WHERE id = ?`, [
+            department,
+            role_id,
           ]);
           console.log(
             answers.role +
