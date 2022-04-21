@@ -14,10 +14,10 @@ const addADepartment = (db, start) => {
     ])
     .then((answers) => {
       db.query(
-        "INSERT INTO department SET ?",
-        {
-          department: answers.department,
-        },
+        `INSERT INTO department (name) values ('${answers.department}') `,
+        // [
+        //   answers.department,
+        // ],
         (err) => {
           if (err) throw err;
           console.log(answers.department + " successfully added department ");
@@ -51,58 +51,95 @@ const addADepartment = (db, start) => {
 //       );
 //     });
 // };
-const addARole = (db, start) => {
+// const addARole = (db, start) => {
   // because a role belongs to a department, we need to know all the departments available to add this role to.
   //first we need to get all the departments as a list to use in inquirer as a list for choices to be selected
   // then we ask the role questions -- title, salary, and which department
   //then we know title salary and department id and can insert those values into the role table
-  db.query("SELECT title as name, id as value FROM role", (err, results) => {
-    if (err) throw err;
+  // db.query("SELECT title as name, id as value FROM role", (err, results) => {
+  //   if (err) throw err;
 
-    db.query(
-      "SELECT concat(title) as name, id as value from employee",
-      (err, employeeData) => {
-        inquirer
-          .prompt([
-            {
-              name: "title",
-              type: "input",
-              message: "Please enter the title of the role you like to add?",
-            },
-            {
-              name: "salary",
-              type: "input",
-              message: "Please enter the salary of the role.",
-            },
-            {
-              name: "department_id",
-              type: "input",
-              message: "Please enter the department_id.",
-            },
-          ])
-          .then((answers) => {
-            db.query(
-              "INSERT INTO employee SET ?",
-              {
-                title: answers.title,
-                salary: answers.salary,
-                department_id: answers.department_id,
-              },
-              (err) => {
-                if (err) throw err;
-                console.log(
-                  answers.title + " successfully added Role. " + answers.role
-                );
-                // Return to the beginning
-                start();
-              }
-            );
-          });
-      }
-    );
-  });
-};
-
+  //   db.query(
+  //     "SELECT concat(title) as name, id as value from employee",
+//   //     (err, employeeData) => {
+//         inquirer
+//           .prompt([
+//             {
+//               name: "title",
+//               type: "input",
+//               message: "Please enter the title of the role you like to add?",
+//             },
+//             {
+//               name: "salary",
+//               type: "input",
+//               message: "Please enter the salary of the role.",
+//             },
+//             {
+//               name: "department_id",
+//               type: "list",
+//               message: "Please enter the department_id.",
+//               choices: 
+//             },
+//           ])
+//           .then((answers) => {
+//             db.query(
+//               "INSERT INTO role SET ?",
+//               {
+//                 title: answers.title,
+//                 salary: answers.salary,
+//                 department_id: answers.department_id,
+//               },
+//               (err) => {
+//                 if (err) throw err;
+//                 console.log(
+//                   answers.title + " successfully added Role. " + answers.role
+//                 );
+//                 // Return to the beginning
+//                 start();
+//               }
+//             );
+//           });
+//       }
+//     );
+//   });
+// };
+// ------------------------------------------------------------------------------
+function addARole(db, start) {
+  inquirer
+    .prompt([
+      {
+        name: "title",
+        type: "input",
+        message: "What is the title of the new role?",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "What is the salary?",
+      },
+      {
+        name: "department_id",
+        type: "input",
+        message:
+          "What is the Department ID for this new role? Please select 1 for Sales, 2 for Engineering, 3 for Finance, 4 for Legal.",
+        choices: [1, 2, 3, 4],
+      },
+    ])
+    .then(function (answer) {
+      var query =
+        "INSERT INTO Role (title, salary, department_id) VALUES (?, ?, ?)";
+      connection.query(
+        query,
+        [answer.title, answer.salary, answer.department_id],
+        function (err, res) {
+          if (err) throw err;
+          console.log(`Successfully Added Role: ${answer.title}`);
+          runSearch();
+        }
+      );
+    });
+}
+// ----------------------
 // const addARole = (db, start) => {
 //   inquirer
 //     .prompt([
@@ -119,14 +156,14 @@ const addARole = (db, start) => {
 //     ])
 //     .then(function (answers) {
 //       db.query(
-//         "INSERT INTO role SET ?",
-//         {
-//           title: answers.role,
-//           salary: answers.salary,
-//         },
+//         "NSERT INTO employee SET" ,
+//         // {
+//         //   title: answers.role,
+//         //   salary: answers.salary,
+//         // },
 //         function (err) {
 //           if (err) throw err;
-//           console.log(answers.role + " has been successfully added to roles.");
+//           console.log(answers.salary + " has been successfully added to roles.");
 //           // Return to the beginning
 //           start();
 //         }
