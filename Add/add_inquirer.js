@@ -105,6 +105,9 @@ const addADepartment = (db, start) => {
 // };
 // ------------------------------------------------------------------------------
 function addARole(db, start) {
+  db.query('SELECT name , id as value FROM department', function(err, data) {
+
+
   inquirer
     .prompt([
       {
@@ -119,25 +122,26 @@ function addARole(db, start) {
       },
       {
         name: "department_id",
-        type: "input",
+        type: "list",
         message:
           "What is the Department ID for this new role? Please select 1 for Sales, 2 for Engineering, 3 for Finance, 4 for Legal.",
-        choices: [1, 2, 3, 4],
+        choices: data
       },
     ])
     .then(function (answer) {
       var query =
         "INSERT INTO Role (title, salary, department_id) VALUES (?, ?, ?)";
-      connection.query(
+      db.query(
         query,
         [answer.title, answer.salary, answer.department_id],
         function (err, res) {
           if (err) throw err;
           console.log(`Successfully Added Role: ${answer.title}`);
-          runSearch();
+          start();
         }
       );
     });
+    })
 }
 // ----------------------
 // const addARole = (db, start) => {
@@ -233,3 +237,6 @@ const addAnEmployee = (db, start) => {
 };
 
 module.exports = { addADepartment, addARole, addAnEmployee };
+
+
+
