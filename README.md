@@ -55,6 +55,9 @@ This application can be used to create an employee database using CRUD operation
 
 ## Demonstration video
 
+https://user-images.githubusercontent.com/67285232/165202684-edb030f3-b836-48ba-9cd1-44270f9fdcfa.mp4
+
+
 ## License
 
 License under the MIT
